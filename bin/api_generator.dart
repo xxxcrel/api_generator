@@ -2,8 +2,6 @@ library api_generator;
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:api_generator/src/path_not_exist.dart';
-
 import '../lib/src/swager_to_dart_api.dart';
 import '../lib/src/swaget_to_dart_json.dart';
 
@@ -35,7 +33,7 @@ void main() {
     }
   }
   print("default template:\n $template");
-  
+
   swagerToDartJson(url, savePath);
   swagerToDartApi(url, template, savePath);
 }
