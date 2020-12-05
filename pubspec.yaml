@@ -2,7 +2,7 @@ name: api_generator
 description: A new Flutter package project.
 version: 0.0.1
 author: xxxcrel
-homepage:
+homepage: xxxcrel.github.io
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -11,6 +11,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  path_provider: ^1.6.24
+  http: ^0.12.0+2
+  darq: ^0.4.0+1 #LinQ like operators
+  dart_style: "^1.0.10"
+  json_ast: "^1.0.5"
+  json_to_dart: "^1.0.4"
 
 dev_dependencies:
   flutter_test:

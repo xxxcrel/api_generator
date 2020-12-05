@@ -2,8 +2,8 @@ library api_generator;
 
 import 'dart:convert';
 import 'dart:io';
-import 'src/swager_to_dart_api.dart';
-import 'src/swaget_to_dart_json.dart';
+import '../lib/src/swager_to_dart_api.dart';
+import '../lib/src/swaget_to_dart_json.dart';
 
 var encoding = Encoding.getByName("utf-8");
 

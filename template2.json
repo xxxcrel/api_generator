@@ -1,0 +1,212 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "xx相关接口的文档",
+        "version": "1.0",
+        "title": "Swagger测试的接口文档"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "Hello",
+            "description": "Hello"
+        }
+    ],
+    "paths": {
+        "/hello": {
+            "get": {
+                "tags": [
+                    "Hello"
+                ],
+                "summary": "getResults",
+                "operationId": "getResultsUsingGET",
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Result«string»"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Hello"
+                ],
+                "summary": "getMaps",
+                "operationId": "getMapsUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Result"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/hello/wow": {
+            "get": {
+                "tags": [
+                    "Hello"
+                ],
+                "summary": "getUsers",
+                "operationId": "getUsersUsingGET",
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Result«User»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Post": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "sth": {
+                    "type": "object"
+                }
+            },
+            "title": "Post"
+        },
+        "Result": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "object"
+                }
+            },
+            "title": "Result"
+        },
+        "Result«User»": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "$ref": "#/definitions/User"
+                }
+            },
+            "title": "Result«User»"
+        },
+        "Result«string»": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                }
+            },
+            "title": "Result«string»"
+        },
+        "User": {
+            "type": "object",
+            "properties": {
+                "charData": {
+                    "type": "string"
+                },
+                "doubleData": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "floatData": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "hashMapData": {
+                    "type": "object",
+                    "description": "HashMap",
+                    "allowEmptyValue": false,
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "intData": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "longData": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "mapData": {
+                    "type": "object",
+                    "allowEmptyValue": false,
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "objectData": {
+                    "$ref": "#/definitions/Result"
+                },
+                "post": {
+                    "$ref": "#/definitions/Post"
+                },
+                "primitiveData": {
+                    "type": "object"
+                },
+                "shortData": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "username": {
+                    "type": "string"
+                }
+            },
+            "title": "User"
+        }
+    }
+}
