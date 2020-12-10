@@ -2,6 +2,8 @@ library api_generator;
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:api_generator/src/model_generator.dart';
+
 import '../lib/src/swager_to_dart_api.dart';
 import '../lib/src/swaget_to_dart_json.dart';
 
@@ -26,19 +28,21 @@ void main() {
     if (savePath.isEmpty || savePath.length == 0) {
       savePath = _defaultSavePath;
     }
-    if(pathExist(savePath)){
+    if(dirExist(savePath)){
       break;
     }else{
-      print("can't find path \"$savePath\", please create first");
+      print("can't find directory \"$savePath\", please create first");
     }
   }
   print("default template:\n $template");
 
-  swagerToDartJson(url, savePath);
+  // swagerToDartJson(url, savePath);
+  
+  ModelGenerator.generate(url, savePath);
   swagerToDartApi(url, template, savePath);
 }
 
-bool pathExist(String path) {
+bool dirExist(String path) {
   var file = Directory(path);
   if (!file.existsSync()) {
     return false;
