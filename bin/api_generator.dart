@@ -4,9 +4,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:api_generator/src/model_generator.dart';
 
-import '../lib/src/swager_to_dart_api.dart';
-import '../lib/src/swaget_to_dart_json.dart';
-
 var encoding = Encoding.getByName("utf-8");
 
 String template =
@@ -28,18 +25,17 @@ void main() {
     if (savePath.isEmpty || savePath.length == 0) {
       savePath = _defaultSavePath;
     }
-    if(dirExist(savePath)){
+    if (dirExist(savePath)) {
       break;
-    }else{
+    } else {
       print("can't find directory \"$savePath\", please create first");
     }
   }
   print("default template:\n $template");
 
-  // swagerToDartJson(url, savePath);
-  
   ModelGenerator.generate(url, savePath);
-  swagerToDartApi(url, template, savePath);
+  // swagerToDartJson(url, savePath);
+  // swagerToDartApi(url, template, savePath);
 }
 
 bool dirExist(String path) {

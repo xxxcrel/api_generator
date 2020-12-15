@@ -19,10 +19,12 @@ class ModelGenerator {
     var file = await http.get(url);
     String jsonString = file.body.replaceAll("«", "<").replaceAll("»", ">");
 
-    var map = json
-        .decode(jsonString)["definitions"]
-        .map((k, v) => MapEntry(k, v["properties"]));
-    //收集泛型
+    Map map = json.decode(jsonString)["definitions"];
+    //去除类似JSONObject等第三方model对象
+    map.removeWhere((key, value) => !value.containsKey("properties"));
+    map = map.map((k, v) => MapEntry(k, v["properties"]));
+
+    // 收集泛型
     map.entries.forEach((e) {
       if (e.key.toString().contains('<')) {
         String realName = e.key;
@@ -32,6 +34,7 @@ class ModelGenerator {
     map.entries.forEach((e) {
       handleModel(e);
     });
+    classModels.forEach((element) => generateDartModel(element));
   }
 
   static void handleModel(MapEntry entry) {
@@ -44,21 +47,46 @@ class ModelGenerator {
 
     if (genericModels.containsKey(realName)) {
       handleGenericeModel(entry.value);
-      // genericProperties.putIfAbsent(realName, () => );
     } else {
-      // print("handle non generice");
       properties = handleNonGenericModel(entry.value);
       classModels.add(ClassModel(className: realName, properties: properties));
       // print(JsonEncoder.withIndent('  ').convert(properties));
     }
-    classModels.forEach((element) {
-      generateDartModel("helo", element);
-    });
   }
 
   static Map handleGenericeModel(var properties) {}
 
-  static void generateDartModel(String path, ClassModel classModel) {
+  //解析非泛型model的属性名字与类型
+  //因swagger限制不能解析Map类型的字段, 只有当特别配置了swagger
+  static Map handleNonGenericModel(var properties) {
+    return properties.map((key, value) {
+      String type = "";
+      if (value.containsKey('\$ref')) {
+        //字段类型是自定义类型
+        type = value['\$ref'];
+        // print(type);
+        type = type.substring(type.lastIndexOf('\/') + 1);
+      } else {
+        type = value['type'];
+        if (type == 'array') {
+          String listType = "";
+          var subType = value['items'];
+          if (subType.containsKey('type')) {
+            listType = 'List<${subType['type']}>';
+          } else if (subType.containsKey('\$ref')) {
+            subType = subType['\$ref'];
+            listType =
+                'List<${subType.substring(subType.lastIndexOf('\/') + 1)}>';
+          }
+          type = listType;
+        }
+      }
+      // print("fieldName:$key, fieldType:$type");
+      return MapEntry(key, type);
+    });
+  }
+
+  static void generateDartModel(ClassModel classModel) {
     List<String> fieldDefinition = List();
     Set<String> referenceImports = Set();
     classModel.properties
@@ -99,8 +127,14 @@ class ModelGenerator {
   }
 
   static Future<File> _saveToFile(String fileName, String data) async {
-    var file = File("$_savePath/models/$fileName.dart");
-    if (!file.parent.existsSync()) file.parent.createSync();
+    var file;
+    try {
+      file = File("$_savePath/models/$fileName.dart");
+      if (!file.parent.existsSync()) file.parent.createSync();
+    } catch (e) {
+      print(e);
+    }
+
     return file.writeAsString(data);
   }
 
@@ -117,28 +151,6 @@ class ModelGenerator {
   static bool isList(String value) {
     RegExp regExp = new RegExp(r'List<\w+>');
     return regExp.hasMatch(value);
-  }
-
-  //解析非泛型model的属性名字与类型
-  //因swagger限制不能解析Map类型的字段, 只有当特别配置了swagger @ApiMo
-  static Map handleNonGenericModel(var properties) {
-    return properties.map((key, value) {
-      String type = "";
-      if (value.containsKey('\$ref')) {
-        //字段类型是自定义类型
-        type = value['\$ref'];
-        type = type.substring(type.lastIndexOf('\/') + 1);
-      } else {
-        type = value['type'];
-        if (type == 'array') {
-          String subType = value['items']['\$ref'];
-          String listType =
-              'List<${subType.substring(subType.lastIndexOf('\/') + 1)}>';
-          type = listType;
-        }
-      }
-      return MapEntry(key, type);
-    });
   }
 
   static String convertToDartType(String originalType) {
@@ -171,5 +183,5 @@ class ClassModel {
 }
 
 // void main() {
-//   ModelGenerator.generate();
+//   ModelGenerator.generate("");
 // }
