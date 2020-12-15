@@ -72,11 +72,11 @@ class ModelGenerator {
           String listType = "";
           var subType = value['items'];
           if (subType.containsKey('type')) {
-            listType = 'List<${subType['type']}>';
+            listType = 'List<${convertToDartType(subType['type'])}>';
           } else if (subType.containsKey('\$ref')) {
             subType = subType['\$ref'];
             listType =
-                'List<${subType.substring(subType.lastIndexOf('\/') + 1)}>';
+                'List<${convertToDartType(subType.substring(subType.lastIndexOf('\/') + 1))}>';
           }
           type = listType;
         }
@@ -93,11 +93,15 @@ class ModelGenerator {
         .map((key, value) => MapEntry(key, convertToDartType(value)))
         .forEach((key, value) {
       if (!isPrimitive(value)) {
+        String reference = value;
         if (isList(value)) {
-          referenceImports.add(
-              "import '${value.substring(value.indexOf("<") + 1, value.length - 1)}.dart';");
+          reference =
+              "${value.substring(value.indexOf("<") + 1, value.length - 1)}";
+          if (!isPrimitive(reference)) {
+            referenceImports.add("import '$reference.dart';");
+          }
         } else
-          referenceImports.add("import '$value.dart';");
+          referenceImports.add("import '$reference.dart';");
       }
       fieldDefinition.add("$value $key;\n");
     });
@@ -154,25 +158,27 @@ class ModelGenerator {
   }
 
   static String convertToDartType(String originalType) {
+    String dartType = originalType;
     switch (originalType) {
       case "string":
-        return "String";
+        dartType = "String";
         break;
       case "boolean":
-        return "bool";
+        dartType = "bool";
         break;
       case "integer":
-        return "int";
+        dartType = "int";
         break;
       case "number":
-        return "num";
+        dartType = "num";
         break;
       case "object":
-        return "Object";
+        dartType = "Object";
         break;
       default:
-        return originalType;
+        break;
     }
+    return dartType;
   }
 }
 
