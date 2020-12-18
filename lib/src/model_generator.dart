@@ -35,6 +35,7 @@ class ModelGenerator {
       handleModel(e);
     });
     classModels.forEach((element) => generateDartModel(element));
+    generateModelClass();
   }
 
   static void handleModel(MapEntry entry) {
@@ -86,6 +87,15 @@ class ModelGenerator {
     });
   }
 
+  static void generateModelClass() {
+    String data = """
+    abstract class Model{
+      Model json(Map<String, dynamic> json);
+    }
+    """;
+    _saveToFile("Model", data);
+  }
+
   static void generateDartModel(ClassModel classModel) {
     List<String> fieldDefinition = List();
     Set<String> referenceImports = Set();
@@ -108,20 +118,27 @@ class ModelGenerator {
 
     String modelString = """
     import 'package:json_annotation/json_annotation.dart';
+    import 'Model.dart';
     ${referenceImports.join()}
 
     part '${classModel.className}.g.dart';
 
     @JsonSerializable(explicitToJson: true)
-    class ${classModel.className}{
+    class ${classModel.className} extends Model{
+
       ${classModel.className}();
 
       ${fieldDefinition.join()}
+
+      ${classModel.className} json(Map<String, dynamic> json){
+        return ${classModel.className}.fromJson(json);
+      }
 
       factory ${classModel.className}.fromJson(Map<String, dynamic> json) =>
       _\$${classModel.className}FromJson(json);
       Map<String, dynamic> toJson() => _\$${classModel.className}ToJson(this);
     }
+
     """;
     var formatter = DartFormatter();
     modelString =
